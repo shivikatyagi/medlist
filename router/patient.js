@@ -76,7 +76,7 @@ router.post('/patient/login',async(req,res)=>{
     const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
     patient.Tokens = patient.Tokens.concat({ token })
     await patient.save()
-    res.status(200).send("You have logged in")
+    res.status(200).send({token,patient})
 })
 
 router.post('/patient/logout',auth,async(req,res)=>{
