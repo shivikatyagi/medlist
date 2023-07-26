@@ -20,7 +20,17 @@ const hospitalSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
-    }
+    },
+    slots:[{
+        date:String,
+        time:String
+    }],
+    Tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }],
 
 })
 

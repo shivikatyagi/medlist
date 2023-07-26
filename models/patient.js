@@ -22,7 +22,11 @@ const patientSchema = new mongoose.Schema({
         unique:true,
         required:true
     },
-    Medicine:{
+    Verified:{
+        type: String,
+        required:true
+    },
+    Medicine:[{
         MedicineName: {
             type: String,
             trim: true
@@ -37,8 +41,8 @@ const patientSchema = new mongoose.Schema({
         DateAdded:{
             type: Date,
         }
-    },
-    Exercise:{
+    }],
+    Exercise:[{
         Description: {
             type: String,
             trim: true
@@ -49,7 +53,7 @@ const patientSchema = new mongoose.Schema({
         DateAdded:{
             type: Date,
         }
-    },
+    }],
     BalancedDiet:{
         WhatToEat:[
             {
@@ -70,19 +74,27 @@ const patientSchema = new mongoose.Schema({
             type: Date,
         }
     },
-    Reports:
-        {
-            Description: {
+    Reports:{
+        Description: {
             type: String,
             trim: true
-            },
-            file:{
-                type:Buffer
-            },
-            DateAdded:{
-                type: Date,
-            }
+        },
+        file:{
+            type:Buffer
+        },
+        DateAdded:{
+            type: Date,
         }
+    },
+    Slot:{
+        type: Date
+    },
+    Tokens: [{
+            token: {
+                type: String,
+                required: true
+            }
+        }],
     
 })
 

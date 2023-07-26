@@ -2,7 +2,9 @@ const express = require('express')
 const Patient = require('../models/patient')
 const Hospital = require('../models/hospital')
 const Temp = require('../models/temp')
+const auth = require('../middleware/patient_auth')
 const sendSMS = require('../verification/send')
+const jwt = require('jsonwebtoken')
 const router = new express.Router()
 
 const generateOTP = async function(){
@@ -50,14 +52,100 @@ router.post('/RegisteringPatient', async(req,res)=>{
             verifieduser.HospitalName=user.HospitalName
             verifieduser.HospitalID=user.HospitalID
             verifieduser.Phone=user.Phone
+            verifieduser.Verified='not verified'
+            const token = jwt.sign({ _id: verifieduser._id.toString() }, process.env.JWT_SECRET)
+            verifieduser.Tokens = verifieduser.Tokens.concat({ token })
             await verifieduser.save()
             console.log(verifieduser.id)
             await Temp.findByIdAndDelete(req.body.id);
-            res.status(200).send("registered successfully")
+            res.status(200).send({verifieduser,token})
         }
         else{
-            res.status(200).send("wrong otp")
+            res.status(201).send("wrong otp")
         }
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.post('/patient/login',async(req,res)=>{
+    const patient = await Patient.findOne({Phone:req.body.Phone, HospitalName:req.body.HospitalName})
+    if(!patient){
+        res.status(200).send("Patient not found , register first")
+    }
+    const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
+    patient.Tokens = patient.Tokens.concat({ token })
+    await patient.save()
+    res.status(200).send("You have logged in")
+})
+
+router.post('/patient/logout',auth,async(req,res)=>{
+    try{
+        req.patient.Tokens = req.patient.Tokens.filter((token)=>{
+            return token.token!==req.token
+        })
+        await req.patient.save()
+        res.send("you are logged out")
+    }catch(e){
+            res.status(500).send()
+    }
+})
+ 
+router.post('/patient/logoutAll',auth, async(req,res)=>{
+    try{
+        req.patient.Tokens=[]
+        await req.patient.save()
+        res.send("you are logged out from all devices")
+    }catch(e){
+        res.status(500).send()
+    }
+})
+
+router.get('/patientDetail',auth,async(req,res)=>{
+    try{
+        const patient = await Patient.findOne({_id:req.patient._id}).select("id PatientName HospitalName Phone")
+        res.status(200).send(patient)
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/bookAppointment', auth,async(req,res)=>{
+    try{ 
+        req.patient.slot=req.body.slot
+
+        const hospital=Patient.findById(req.patient.HospitalID)
+        hospital.slot.push(req.body.slot)
+        res.status(200).send(req.patient.Medicine)
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/Medicine', auth,async(req,res)=>{
+    try{ 
+        res.status(200).send(req.patient.Medicine)
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+
+router.get('/Exercise', auth,async(req,res)=>{
+    try{ 
+        res.status(200).send(req.patient.Exercise)
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/Diet', auth,async(req,res)=>{
+    try{ 
+        res.status(200).send(req.patient.BalancedDiet)
+        
     }catch(e){
         res.status(400).send(e)
     }
