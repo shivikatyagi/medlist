@@ -114,26 +114,60 @@ const generateOTP = async function(){
 //     }
 // })
 
-
-router.post('/patient/register',auth,async(req,res)=>{
+router.post('/patient/SendDetails',async(req,res)=>{
     try{
+        const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
+        if(existinghospital){
+            const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
+            if(!existingpatient){
+                res.status(200).send(req.body)
+            }
+            else{
+                res.status(200).send("User with this phone number already exists.....you want to login ?")
+            }
+        }
+        else{
+            res.status(200).send("hospital is not registered")
+        }
+    }catch(e){
+            res.status(500).send()
+    }
+})
+router.post('/patient/register',async(req,res)=>{
+    try{
+        const hospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
         const patient = new Patient(req.body)
+        patient.HospitalID=hospital.id
+        patient.Verified='not verified'
         const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
         patient.Tokens = patient.Tokens.concat({ token })
         await patient.save()
-        res.send({patient,token})
+        console.log("hbjnmdsfn");
+        res.status(201).send({patient,token})
     }catch(e){
             res.status(500).send()
     }
 })
 
-router.post('/patient/login',auth,async(req,res)=>{
+router.post('/patient/SendLoginDetails',async(req,res)=>{
+    try{
+        const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
+        if(!patient)
+        res.status(200).send("Enter valid credentials")
+        else
+        res.status(200).send(req.body)
+    }catch(e){
+            res.status(500).send()
+    }
+})
+
+router.post('/patient/login',async(req,res)=>{
     try{
         const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
         const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
         patient.Tokens = patient.Tokens.concat({ token })
         await patient.save()
-        res.send({patient,token})
+        res.status(201).send({patient,token})
     }catch(e){
             res.status(500).send()
     }

@@ -104,6 +104,17 @@ router.post('/hospital/logout',auth,async(req,res)=>{
     }
 })
 
+ 
+router.post('/hospital/logoutAll',auth, async(req,res)=>{
+    try{
+        req.hospital.Tokens=[]
+        await req.hospital.save()
+        res.send("you are logged out from all devices")
+    }catch(e){
+        res.status(500).send()
+    }
+})
+
 router.post('/ForgotPassword',async(req,res)=>{
     try{
         const hospital = await Hospital.findOne({_id:req.body.hospital_id })
@@ -122,16 +133,6 @@ router.post('/ForgotPassword',async(req,res)=>{
         res.send("Password has changed ....Please login with updated password")
     }catch(e){
             res.status(500).send()
-    }
-})
- 
-router.post('/hospital/logoutAll',auth, async(req,res)=>{
-    try{
-        req.hospital.Tokens=[]
-        await req.hospital.save()
-        res.send("you are logged out from all devices")
-    }catch(e){
-        res.status(500).send()
     }
 })
 
@@ -162,6 +163,28 @@ router.post('/verifyingPatient',auth, async(req,res)=>{
         res.status(400).send(e)
     }
 })
+
+
+router.get('/SearchPatient',auth, async(req,res)=>{
+    try{
+        console.log(req.query.key);
+        const data = await Patient.find({
+            HospitalName: req.hospital.HospitalName,
+            $or: [
+                { PatientName: { $regex: req.query.key, $options: 'i' } }, 
+                { Phone: { $regex: req.query.key, $options: 'i' } }, 
+                { id: { $regex: req.query.key, $options: 'i' } },
+              ],
+        })
+        if(data.length > 0)
+        res.status(200).send(data)
+        else
+        res.status(200).send("no data found")
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
 
 
 router.post('/addingMedicines',auth,async(req,res)=>{
