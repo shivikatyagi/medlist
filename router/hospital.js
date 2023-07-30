@@ -4,20 +4,48 @@ const Patient = require('../models/patient')
 const multer = require('multer')
 const auth = require('../middleware/hospital_auth')
 const sharp = require('sharp')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const router = new express.Router()
 
-router.post('/createHospital', async(req,res)=>{
+// router.post('/createHospital', async(req,res)=>{
    
+//     try{
+//         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
+//         if(!existinghospital){
+//             const hospital = new Hospital(req.body)
+//             const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+//             hospital.Tokens = hospital.Tokens.concat({ token })
+//             await hospital.save()
+//             console.log(token);
+//             res.status(200).send({token,hospital})
+//         }
+//         else{
+//             res.status(200).send("hospital already exists")
+//         }
+//     }catch(e){
+//         res.status(400).send(e)
+//     }
+// })
+
+
+// router.post('/hospital/login',async(req,res)=>{
+//     const hospital = await Hospital.findOne({Phone:req.body.Phone})
+//     if(!hospital){
+//         res.status(200).send("Hospital not found , register first")
+//     }
+//     const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+//     hospital.Tokens = hospital.Tokens.concat({ token })
+//     await hospital.save()
+//     res.status(200).send("You have logged in")
+// })
+
+
+router.post('/Registeration_Details', async(req,res)=>{
     try{
         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
         if(!existinghospital){
-            const hospital = new Hospital(req.body)
-            const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
-            hospital.Tokens = hospital.Tokens.concat({ token })
-            await hospital.save()
-            console.log(token);
-            res.status(200).send({token,hospital})
+            res.status(200).send(req.body)
         }
         else{
             res.status(200).send("hospital already exists")
@@ -27,16 +55,41 @@ router.post('/createHospital', async(req,res)=>{
     }
 })
 
-
-router.post('/hospital/login',async(req,res)=>{
-    const hospital = await Hospital.findOne({Phone:req.body.Phone})
-    if(!hospital){
-        res.status(200).send("Hospital not found , register first")
+router.post('/Create_Hospital', async(req,res)=>{
+    try{
+            const hospital = new Hospital(req.body)
+            hospital.Password = await bcrypt.hash(req.body.Password, 8)
+            const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+            hospital.Tokens = hospital.Tokens.concat({token})
+            await hospital.save()
+            // console.log(token);
+            res.status(201).send({token,hospital})
+        
+    }catch(e){
+        res.status(400).send(e)
     }
-    const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
-    hospital.Tokens = hospital.Tokens.concat({ token })
-    await hospital.save()
-    res.status(200).send("You have logged in")
+})
+
+router.post('/login_Hospital', async(req,res)=>{
+    try{
+        const hospital = await Hospital.findOne({_id:req.body.hospital_id })
+        if (!hospital) {
+            res.status(404).send('Wrong user id or password')
+        }
+        const isMatch = await bcrypt.compare(req.body.Password, hospital.Password)
+        if (!isMatch) {
+            res.status(404).send('Wrong user id or password')
+        } 
+        else{
+            const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+            hospital.Tokens = hospital.Tokens.concat({token})
+            await hospital.save()
+            res.status(201).send({token,hospital})
+        }
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
 })
 
 router.post('/hospital/logout',auth,async(req,res)=>{
@@ -46,6 +99,27 @@ router.post('/hospital/logout',auth,async(req,res)=>{
         })
         await req.hospital.save()
         res.send("you are logged out")
+    }catch(e){
+            res.status(500).send()
+    }
+})
+
+router.post('/ForgotPassword',async(req,res)=>{
+    try{
+        const hospital = await Hospital.findOne({_id:req.body.hospital_id })
+        if (!hospital) {
+            res.status(404).send('Hospital with this hospital id does not exist')
+        }
+        if(req.body.Password!=req.body.ConfirmPassword)
+        res.send("Confirm Passwprd should be same as Password")
+        const isMatch = await bcrypt.compare(req.body.Password, hospital.Password)
+        if (isMatch) {
+            res.status(404).send('new passwword should not be same as old password')
+        } 
+        hospital.Password = await bcrypt.hash(req.body.Password, 8)
+        hospital.Tokens=[]
+        hospital.save()
+        res.send("Password has changed ....Please login with updated password")
     }catch(e){
             res.status(500).send()
     }
@@ -268,9 +342,10 @@ router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
         const patient = await Patient.findById(req.body.id)
         if(!patient)
             res.status(404).send("patient not found")
-        patient.Reports.file=req.file.buffer
-        patient.Reports.Description=req.body.Description
-        patient.Reports.DateAdded=req.body.DateAdded
+        const file=req.file.buffer
+        const Description=req.body.Description
+        const DateAdded=new Date()
+        patient.Reports.push({file,Description,DateAdded})
         await patient.save()
         console.log("xcvbn");
         res.status(200).send("file saved")

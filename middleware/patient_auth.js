@@ -4,7 +4,6 @@ const Patient = require('../models/patient')
 const Patientauth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').split(" ")[1];
-        // console.log(token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const patient = await Patient.findOne({ id: decoded.id, 'Tokens.token': token })
         
@@ -12,7 +11,6 @@ const Patientauth = async (req, res, next) => {
         if (!patient) {
             throw new Error()
         }
-        // console.log(patient);
         req.token = token
         req.patient = patient
         next()

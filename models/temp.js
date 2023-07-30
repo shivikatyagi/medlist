@@ -3,7 +3,6 @@ require('dotenv').config()
 const tempSchema = new mongoose.Schema({
     PatientName: {
         type: String,
-        required: true,
         trim: true
     },
     HospitalName: {
@@ -13,7 +12,7 @@ const tempSchema = new mongoose.Schema({
     },
     HospitalID: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
         ref: 'Hospital'
     },

@@ -74,7 +74,7 @@ const patientSchema = new mongoose.Schema({
             type: Date,
         }
     },
-    Reports:{
+    Reports:[{
         Description: {
             type: String,
             trim: true
@@ -85,7 +85,7 @@ const patientSchema = new mongoose.Schema({
         DateAdded:{
             type: Date,
         }
-    },
+    }],
     Slot:{
         type: Date
     },

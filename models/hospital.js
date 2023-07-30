@@ -21,9 +21,15 @@ const hospitalSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    Password: {
+        type: String,
+        required: true,
+        minlength: 9,
+        trim: true,
+        required: true,
+    },
     slots:[{
-        date:String,
-        time:String
+        type:Date
     }],
     Tokens: [{
         token: {
