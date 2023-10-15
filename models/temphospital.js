@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
-const hospitalSchema = new mongoose.Schema({
+const TemphospitalSchema = new mongoose.Schema({
     FirstName:{
         type: String,
         required: true,
@@ -65,6 +65,6 @@ const hospitalSchema = new mongoose.Schema({
 
 })
 
-const Hospital = mongoose.model('Hospital', hospitalSchema)
+const TempHospital = mongoose.model('TempHospital', TemphospitalSchema)
 
-module.exports = Hospital
+module.exports = TempHospital

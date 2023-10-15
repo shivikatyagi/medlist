@@ -1,6 +1,8 @@
 const express = require('express')
 const Hospital = require('../models/hospital')
+const TempHospital = require('../models/temphospital')
 const Patient = require('../models/patient')
+const { VerifyEmail} = require('../email/account')
 const multer = require('multer')
 const auth = require('../middleware/hospital_auth')
 const sharp = require('sharp')
@@ -8,77 +10,48 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const router = new express.Router()
 
-// router.post('/createHospital', async(req,res)=>{
-   
-//     try{
-//         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
-//         if(!existinghospital){
-//             const hospital = new Hospital(req.body)
-//             const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
-//             hospital.Tokens = hospital.Tokens.concat({ token })
-//             await hospital.save()
-//             console.log(token);
-//             res.status(200).send({token,hospital})
-//         }
-//         else{
-//             res.status(200).send("hospital already exists")
-//         }
-//     }catch(e){
-//         res.status(400).send(e)
-//     }
-// })
-
-
-// router.post('/hospital/login',async(req,res)=>{
-//     const hospital = await Hospital.findOne({Phone:req.body.Phone})
-//     if(!hospital){
-//         res.status(200).send("Hospital not found , register first")
-//     }
-//     const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
-//     hospital.Tokens = hospital.Tokens.concat({ token })
-//     await hospital.save()
-//     res.status(200).send("You have logged in")
-// })
-
-
-router.post('/Registeration_Details', async(req,res)=>{
-    try{
-        const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
-        if(!existinghospital){
-            res.status(200).send(req.body)
-        }
-        else{
-            res.status(200).send("hospital already exists")
-        }
-    }catch(e){
-        res.status(400).send(e)
-    }
-})
 
 router.post('/Create_Hospital', async(req,res)=>{
     try{
-            const hospital = new Hospital(req.body)
-            hospital.Password = await bcrypt.hash(req.body.Password, 8)
-            const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
-            hospital.Tokens = hospital.Tokens.concat({token})
-            await hospital.save()
-            // console.log(token);
-            res.status(201).send({token,hospital})
+            const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName,Address:req.body.Address})
+            if(!existinghospital){
+                const temphospital = new TempHospital(req.body)
+                temphospital.Password = await bcrypt.hash(req.body.Password, 8)
+                await temphospital.save()
+                await VerifyEmail(temphospital.Email,temphospital.id)
+                res.status(201).send(temphospital)
+            }
+            else{
+                res.status(200).send("hospital already exists, want")
+            }
         
     }catch(e){
         res.status(400).send(e)
     }
 })
 
+router.get('/VerifyEmail', async(req,res)=>{
+    try{
+                const hs = await TempHospital.findOne({_id:req.query.id})
+                const hospital = new Hospital({...hs.toObject()})
+                await hospital.save()
+                res.status(201).send(hospital)
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+
 router.post('/login_Hospital', async(req,res)=>{
     try{
-        const hospital = await Hospital.findOne({_id:req.body.hospital_id })
+        const hospital = await Hospital.findOne({Email:req.body.Email })
         if (!hospital) {
-            res.status(404).send('Wrong user id or password')
+            res.status(404).send('Wrong email or password')
         }
         const isMatch = await bcrypt.compare(req.body.Password, hospital.Password)
         if (!isMatch) {
-            res.status(404).send('Wrong user id or password')
+            res.status(404).send('Wrong email or password')
         } 
         else{
             const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
