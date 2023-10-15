@@ -24,7 +24,7 @@ const mailOptions = await transporter.sendMail({
     subject: 'Email verification', 
     text: `Hi!
            Please follow the given link to verify your email 
-           http://localhost:3000/VerifyEmail?id=${id}
+           https://medlist-shivikatyagi.onrender.com/VerifyEmail?id=${id}
            Thanks` 
     
 });
