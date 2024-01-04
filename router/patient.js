@@ -15,112 +15,21 @@ const generateOTP = async function(){
     return otp
     }
 
-// router.post('/SendPatient', async(req,res)=>{
-//     try{
-//         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
-//         if(existinghospital){
-//             const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
-//             if(!existingpatient){
-//                 const temppatient= new Temp(req.body)
-//                 otp =await generateOTP();
-//                 await sendSMS(req.body.Phone,otp)
-//                 temppatient.HospitalID=existinghospital.id
-//                 temppatient.otp=otp
-//                 await temppatient.save()
-//                 console.log("fgfhgjhfc");
-//                 console.log(temppatient.id,otp);
-//                 res.status(200).send("sms sent....check your phone")
-//             }
-//             else{
-//                 res.status(200).send("User with this phone number already exists.....you want to login ?")
-//             }
-//         }
-//         else{
-//             res.status(200).send("hospital is not registered")
-//         }
-//     }catch(e){
-//         res.status(400).send(e)
-//     }
-// })
-
-// router.post('/RegisteringPatient', async(req,res)=>{
-//     try{ 
-//         const user=await Temp.findById(req.body.id)
-//         if(user.otp==req.body.otp){
-//             const verifieduser=new Patient();
-//             verifieduser.PatientName=user.PatientName
-//             verifieduser.HospitalName=user.HospitalName
-//             verifieduser.HospitalID=user.HospitalID
-//             verifieduser.Phone=user.Phone
-//             verifieduser.Verified='not verified'
-//             const token = jwt.sign({ _id: verifieduser._id.toString() }, process.env.JWT_SECRET)
-//             verifieduser.Tokens = verifieduser.Tokens.concat({ token })
-//             await verifieduser.save()
-//             console.log(verifieduser.id)
-//             await Temp.findByIdAndDelete(req.body.id);
-//             res.status(200).send({verifieduser,token})
-//         }
-//         else{
-//             res.status(201).send("wrong otp")
-//         }
-//     }catch(e){
-//         res.status(400).send(e)
-//     }
-// })
-
-// router.post('/patient/send-login',async(req,res)=>{
-//     try{
-//         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
-//         if(existinghospital){
-//             const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
-//             if(existingpatient){
-//                 const temppatient= new Temp(req.body)
-//                 otp =await generateOTP();
-//                 await sendSMS(req.body.Phone,otp)
-//                 temppatient.HospitalID=existinghospital.id
-//                 temppatient.otp=otp
-//                 await temppatient.save()
-//                 console.log("fgfhgjhfc");
-//                 console.log(temppatient.id,otp);
-//                 res.status(200).send("sms sent....check your phone")
-//             }
-//             else{
-//                 res.status(200).send("No data found for the user.....register first")
-//             }
-//         }
-//         else{
-//             res.status(200).send("No data found for the hospital")
-//         }
-//     }catch(e){
-//         res.status(400).send(e)
-//     }
-// })
-
-// router.post('/patient/verification-login',async(req,res)=>{
-//     try{ 
-//         const user=await Temp.findById(req.body.id)
-//         if(user.otp==req.body.otp){
-//             const patient=await Patient.findOne({Phone:user.Phone,HospitalName:user.HospitalName}) 
-            // const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
-            // patient.Tokens = patient.Tokens.concat({ token })
-            // await patient.save()
-//             res.status(200).send({patient,token})
-//         }
-//         else{
-//             res.status(201).send("wrong otp")
-//         }
-//     }catch(e){
-//         res.status(400).send(e)
-//     }
-// })
-
-router.post('/patient/SendDetails',async(req,res)=>{
+router.post('/SendPatient', async(req,res)=>{
     try{
         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
         if(existinghospital){
             const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
             if(!existingpatient){
-                res.status(200).send(req.body)
+                const temppatient= new Temp(req.body)
+                otp =await generateOTP();
+                await sendSMS(req.body.Phone,otp)
+                temppatient.HospitalID=existinghospital.id
+                temppatient.otp=otp
+                await temppatient.save()
+                console.log("fgfhgjhfc");
+                console.log(temppatient.id,otp);
+                res.status(200).send("sms sent....check your phone")
             }
             else{
                 res.status(200).send("User with this phone number already exists.....you want to login ?")
@@ -130,48 +39,139 @@ router.post('/patient/SendDetails',async(req,res)=>{
             res.status(200).send("hospital is not registered")
         }
     }catch(e){
-            res.status(500).send()
-    }
-})
-router.post('/patient/register',async(req,res)=>{
-    try{
-        const hospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
-        const patient = new Patient(req.body)
-        patient.HospitalID=hospital.id
-        patient.Verified='not verified'
-        const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
-        patient.Tokens = patient.Tokens.concat({ token })
-        await patient.save()
-        console.log("hbjnmdsfn");
-        res.status(201).send({patient,token})
-    }catch(e){
-            res.status(500).send()
+        res.status(400).send(e)
     }
 })
 
-router.post('/patient/SendLoginDetails',async(req,res)=>{
-    try{
-        const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
-        if(!patient)
-        res.status(200).send("Enter valid credentials")
-        else
-        res.status(200).send(req.body)
+router.post('/RegisteringPatient', async(req,res)=>{
+    try{ 
+        const user=await Temp.findById(req.body.id)
+        if(user.otp==req.body.otp){
+            const verifieduser=new Patient();
+            verifieduser.PatientName=user.PatientName
+            verifieduser.HospitalName=user.HospitalName
+            verifieduser.HospitalID=user.HospitalID
+            verifieduser.Phone=user.Phone
+            verifieduser.Verified='not verified'
+            const token = jwt.sign({ _id: verifieduser._id.toString() }, process.env.JWT_SECRET)
+            verifieduser.Tokens = verifieduser.Tokens.concat({ token })
+            await verifieduser.save()
+            console.log(verifieduser.id)
+            await Temp.findByIdAndDelete(req.body.id);
+            res.status(200).send({verifieduser,token})
+        }
+        else{
+            res.status(201).send("wrong otp")
+        }
     }catch(e){
-            res.status(500).send()
+        res.status(400).send(e)
     }
 })
 
-router.post('/patient/login',async(req,res)=>{
+router.post('/patient/send-login',async(req,res)=>{
     try{
-        const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
-        const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
-        patient.Tokens = patient.Tokens.concat({ token })
-        await patient.save()
-        res.status(201).send({patient,token})
+        const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
+        if(existinghospital){
+            const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
+            if(existingpatient){
+                const temppatient= new Temp(req.body)
+                otp =await generateOTP();
+                await sendSMS(req.body.Phone,otp)
+                temppatient.HospitalID=existinghospital.id
+                temppatient.otp=otp
+                await temppatient.save()
+                console.log("fgfhgjhfc");
+                console.log(temppatient.id,otp);
+                res.status(200).send("sms sent....check your phone")
+            }
+            else{
+                res.status(200).send("No data found for the user.....register first")
+            }
+        }
+        else{
+            res.status(200).send("No data found for the hospital")
+        }
     }catch(e){
-            res.status(500).send()
+        res.status(400).send(e)
     }
 })
+
+router.post('/patient/verification-login',async(req,res)=>{
+    try{ 
+        const user=await Temp.findById(req.body.id)
+        if(user.otp==req.body.otp){
+            const patient=await Patient.findOne({Phone:user.Phone,HospitalName:user.HospitalName}) 
+            const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
+            patient.Tokens = patient.Tokens.concat({ token })
+            await patient.save()
+            res.status(200).send({patient,token})
+        }
+        else{
+            res.status(201).send("wrong otp")
+        }
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+// router.post('/patient/SendDetails',async(req,res)=>{
+//     try{
+//         const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
+//         if(existinghospital){
+//             const existingpatient=await Patient.findOne({Phone:req.body.Phone})    
+//             if(!existingpatient){
+//                 res.status(200).send(req.body)
+//             }
+//             else{
+//                 res.status(200).send("User with this phone number already exists.....you want to login ?")
+//             }
+//         }
+//         else{
+//             res.status(200).send("hospital is not registered")
+//         }
+//     }catch(e){
+//             res.status(500).send()
+//     }
+// })
+// router.post('/patient/register',async(req,res)=>{
+//     try{
+//         const hospital = await Hospital.findOne({HospitalName:req.body.HospitalName})
+//         const patient = new Patient(req.body)
+//         patient.HospitalID=hospital.id
+//         patient.Verified='not verified'
+//         const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
+//         patient.Tokens = patient.Tokens.concat({ token })
+//         await patient.save()
+//         console.log("hbjnmdsfn");
+//         res.status(201).send({patient,token})
+//     }catch(e){
+//             res.status(500).send()
+//     }
+// })
+
+// router.post('/patient/SendLoginDetails',async(req,res)=>{
+//     try{
+//         const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
+//         if(!patient)
+//         res.status(200).send("Enter valid credentials")
+//         else
+//         res.status(200).send(req.body)
+//     }catch(e){
+//             res.status(500).send()
+//     }
+// })
+
+// router.post('/patient/login',async(req,res)=>{
+//     try{
+//         const patient = await Patient.findOne({Phone:req.body.Phone,HospitalName:req.body.HospitalName})
+//         const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
+//         patient.Tokens = patient.Tokens.concat({ token })
+//         await patient.save()
+//         res.status(201).send({patient,token})
+//     }catch(e){
+//             res.status(500).send()
+//     }
+// })
 
 
 router.post('/patient/logout',auth,async(req,res)=>{

@@ -24,7 +24,8 @@ const patientSchema = new mongoose.Schema({
     },
     Verified:{
         type: String,
-        required:true
+        required:true,
+        enum : ['true','false']
     },
     Medicine:[{
         MedicineName: {
@@ -86,8 +87,17 @@ const patientSchema = new mongoose.Schema({
             type: Date,
         }
     }],
-    Slot:{
-        type: Date
+    Appointment:{
+        Date:{
+            type: String
+        },
+        slot:{
+            type: String
+        },
+        status:{
+            type: String,
+            enum : ['done','left']
+        }
     },
     Tokens: [{
             token: {

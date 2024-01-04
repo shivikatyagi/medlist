@@ -53,9 +53,22 @@ const hospitalSchema = new mongoose.Schema({
         trim: true,
         required: true,
     },
-    slots:[{
-        type:Date
-    }],
+    Verified:{
+        type: String,
+        required:true,
+        enum : ['true','false']
+    },
+    // Appointment:{
+    //     Date:{
+    //         type: String
+    //     },
+    //     slot:{
+    //         type: String
+    //     },
+    //     status:{
+    //         type: String
+    //     }
+    // },
     Tokens: [{
         token: {
             type: String,
