@@ -17,8 +17,8 @@ router.post('/Create_Hospital', async(req,res)=>{
             if(!existinghospital){
                 const temphospital = new TempHospital(req.body)
                 temphospital.Password = await bcrypt.hash(req.body.Password, 8)
+                temphospital.Verified = 'false'
                 await temphospital.save()
-                console.log(temphospital.Verified);
                 await VerifyEmail(temphospital.Email,temphospital.id)
                 res.status(201).send(temphospital)
             }

@@ -26,6 +26,11 @@ const TemphospitalSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    DoctorName: {
+        type: String,
+        required: true,
+        trim: true
+    },
     Address:{
         type: String,
         required: true,
@@ -45,6 +50,11 @@ const TemphospitalSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    Verified:{
+        type: String,
+        required:true,
+        enum : ['true','false']
     },
     Password: {
         type: String,
