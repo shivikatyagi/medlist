@@ -1,12 +1,7 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
 const TemphospitalSchema = new mongoose.Schema({
-    FirstName:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    LastName:{
+    DoctorName:{
         type: String,
         required: true,
         trim: true
@@ -22,11 +17,6 @@ const TemphospitalSchema = new mongoose.Schema({
         trim: true
     },
     HospitalName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    DoctorName: {
         type: String,
         required: true,
         trim: true
@@ -54,7 +44,8 @@ const TemphospitalSchema = new mongoose.Schema({
     Verified:{
         type: String,
         required:true,
-        enum : ['true','false']
+        enum : ['true','false'],
+        default: 'false'
     },
     Password: {
         type: String,
@@ -63,15 +54,30 @@ const TemphospitalSchema = new mongoose.Schema({
         trim: true,
         required: true,
     },
+    EmailVerified:{
+        type: String,
+        required:true,
+        enum : ['true','false'],
+        default: 'false'
+    },
+    EmailOtp:{
+        type: Number,
+    },
+    PhoneVerified:{
+        type: String,
+        required:true,
+        enum : ['true','false'],
+        default: 'false'
+    },
     slots:[{
         type:Date
     }],
-    Tokens: [{
-        token: {
-            type: String,
-            required: true
-        }
-    }],
+    // Tokens: [{
+    //     token: {
+    //         type: String,
+    //         required: true
+    //     }
+    // }],
 
 })
 

@@ -1,12 +1,7 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
 const hospitalSchema = new mongoose.Schema({
-    FirstName:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    LastName:{
+    DoctorName:{
         type: String,
         required: true,
         trim: true
@@ -22,11 +17,6 @@ const hospitalSchema = new mongoose.Schema({
         trim: true
     },
     HospitalName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    DoctorName: {
         type: String,
         required: true,
         trim: true

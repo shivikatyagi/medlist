@@ -1,20 +1,20 @@
-require('dotenv').config();
-const sid = process.env.SID
-const auth_token = process.env.AUTH_TOKEN
-const twilio = require('twilio')(sid,auth_token)
+// require('dotenv').config();
+// const sid = process.env.SID
+// const auth_token = process.env.AUTH_TOKEN
+// const twilio = require('twilio')(sid,auth_token)
 
-async function sendSMS(phn,otp){
-    twilio.messages.create({
-            from : process.env.SENDER_NUMBER,
-            to: "+91 9760814509",
-            body : `Hey !!.....Your otp is ${otp}`
-        })
-        .then((res)=>console.log("sms sent"))
-        .catch((err)=>{
-            console.log(err)
-        });
-}
-module.exports = sendSMS
+// async function sendSMS(phn,otp){
+//     twilio.messages.create({
+//             from : process.env.SENDER_NUMBER,
+//             to: "+91 9760814509",
+//             body : `Hey !!.....Your otp is ${otp}`
+//         })
+//         .then((res)=>console.log("sms sent"))
+//         .catch((err)=>{
+//             console.log(err)
+//         });
+// }
+// module.exports = sendSMS
 
 
 
@@ -52,5 +52,5 @@ module.exports = sendSMS
  
 
 
-module.exports = sendSMS
+// module.exports = sendSMS
 

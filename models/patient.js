@@ -6,17 +6,37 @@ const patientSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    HospitalName: {
-        type: String,
+    Age: {
+        type: Number,
         required: true,
         trim: true
     },
-    HospitalID: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        trim: true,
-        ref: 'Hospital'
-    },
+    Hospital: [{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            required: true,
+            trim: true,
+            ref: 'Hospital'
+        },
+        HospitalName: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: 'Hospital'
+        },
+        Address: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: 'Hospital'
+        },
+        DoctorName: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: 'Hospital'
+        },
+    }],
     Phone:{
         type: String,
         unique:true,

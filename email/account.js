@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const nodemailer = require('nodemailer');
-async function VerifyEmail(email,id){
+async function VerifyEmail(email,otp){
 const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.com",
     port: 465,
@@ -23,8 +23,8 @@ const mailOptions = await transporter.sendMail({
     bcc: process.env.SENDER_EMAIL_USERNAME,
     subject: 'Email verification', 
     text: `Hi!
-           Please follow the given link to verify your email 
-           https://medlist-shivikatyagi.onrender.com/VerifyEmail?id=${id}
+           Your otp is ${otp}.
+           Please verify your email using the same.
            Thanks` 
     
 });

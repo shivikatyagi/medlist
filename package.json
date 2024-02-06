@@ -13,12 +13,13 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "firebase": "^10.7.1",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^6.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.6",
-    "sharp": "^0.32.1",
-    "twilio": "^4.11.2"
+    "otp-generator": "^4.0.1",
+    "sharp": "^0.32.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

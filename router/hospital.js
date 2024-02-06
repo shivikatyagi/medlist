@@ -3,6 +3,7 @@ const Hospital = require('../models/hospital')
 const TempHospital = require('../models/temphospital')
 const Patient = require('../models/patient')
 const { VerifyEmail} = require('../email/account')
+const otpGenerator = require('otp-generator');
 const multer = require('multer')
 const auth = require('../middleware/hospital_auth')
 const sharp = require('sharp')
@@ -10,21 +11,37 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const router = new express.Router()
 
-
 router.post('/Create_Hospital', async(req,res)=>{
     try{
-            const existinghospital = await Hospital.findOne({HospitalName:req.body.HospitalName,Address:req.body.Address})
+            const existinghospital = await Hospital.findOne({DoctorName:req.body.DoctorName,HospitalName:req.body.HospitalName,Address:req.body.Address})
             if(!existinghospital){
                 const temphospital = new TempHospital(req.body)
                 temphospital.Password = await bcrypt.hash(req.body.Password, 8)
-                temphospital.Verified = 'false'
                 await temphospital.save()
-                await VerifyEmail(temphospital.Email,temphospital.id)
                 res.status(201).send(temphospital)
             }
             else{
-                res.status(200).send("hospital already exists, want")
+                res.status(200).send("doctor already exists, want to login ?")
             }
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/SendOtpEmail', async(req,res)=>{
+    try{
+                const hs = await TempHospital.findOne({id:req.params.id})
+                let otp = otpGenerator.generate(4, {
+                    upperCaseAlphabets: false,
+                    lowerCaseAlphabets: false,
+                    specialChars: false,
+                  });
+                hs.EmailOtp=otp
+                await hs.save()
+                await VerifyEmail(hs.Email,otp)
+                console.log(otp);
+                res.status(200).send("otp sent")
         
     }catch(e){
         res.status(400).send(e)
@@ -33,16 +50,53 @@ router.post('/Create_Hospital', async(req,res)=>{
 
 router.get('/VerifyEmail', async(req,res)=>{
     try{
-                const hs = await TempHospital.findOne({_id:req.query.id})
-                const hospital = new Hospital({...hs.toObject()})
-                await hospital.save()
-                res.status(201).send(hospital)
+                const hs = await TempHospital.findOne({id:req.params.id})
+
+                let otp = req.body.otp
+                if(hs.EmailOtp==otp){
+                    hs.EmailVerified="true"
+                    await hs.save()
+                    if(hs.PhoneVerified=='true'){
+                        const hospital = new Hospital({...hs.toObject()})
+                        const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+                        hospital.Tokens = hospital.Tokens.concat({token})
+                        await hospital.save()
+                        res.status(201).send(hospital)
+                    }
+                    res.status(201).send("email verified")
+                }
+                else{
+                    res.status(201).send("Wrong otp")
+                }
         
     }catch(e){
         res.status(400).send(e)
     }
 })
-
+router.get('/VerifyPhone', async(req,res)=>{
+    try{
+                const hs = await TempHospital.findOne({id:req.params.id})
+                if(req.query.mssg=="success"){
+                    console.log("fxdghjkhgfxdzcfg")
+                    hs.PhoneVerified='true'
+                    await hs.save()
+                    if(hs.EmailVerified=='true'){
+                        const hospital = new Hospital({...hs.toObject()})
+                        const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
+                        hospital.Tokens = hospital.Tokens.concat({token})
+                        await hospital.save()
+                        res.status(201).send(hospital)
+                    }
+                    res.status(201).send("phone number verified")
+                }
+                else{
+                    res.status(201).send("Wrong otp")
+                }
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
 
 router.post('/login_Hospital', async(req,res)=>{
     try{
