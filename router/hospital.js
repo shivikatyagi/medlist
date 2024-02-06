@@ -17,6 +17,14 @@ router.post('/Create_Hospital', async(req,res)=>{
             if(!existinghospital){
                 const temphospital = new TempHospital(req.body)
                 temphospital.Password = await bcrypt.hash(req.body.Password, 8)
+                let otp = otpGenerator.generate(4, {
+                    upperCaseAlphabets: false,
+                    lowerCaseAlphabets: false,
+                    specialChars: false,
+                  });
+                temphospital.EmailOtp=otp
+                await VerifyEmail(temphospital.Email,otp)
+                console.log(otp);
                 await temphospital.save()
                 res.status(201).send(temphospital)
             }
@@ -29,24 +37,24 @@ router.post('/Create_Hospital', async(req,res)=>{
     }
 })
 
-router.get('/SendOtpEmail', async(req,res)=>{
-    try{
-                const hs = await TempHospital.findOne({id:req.params.id})
-                let otp = otpGenerator.generate(4, {
-                    upperCaseAlphabets: false,
-                    lowerCaseAlphabets: false,
-                    specialChars: false,
-                  });
-                hs.EmailOtp=otp
-                await hs.save()
-                await VerifyEmail(hs.Email,otp)
-                console.log(otp);
-                res.status(200).send("otp sent")
+// router.get('/SendOtpEmail', async(req,res)=>{
+//     try{
+//                 const hs = await TempHospital.findOne({id:req.params.id})
+//                 let otp = otpGenerator.generate(4, {
+//                     upperCaseAlphabets: false,
+//                     lowerCaseAlphabets: false,
+//                     specialChars: false,
+//                   });
+//                 hs.EmailOtp=otp
+//                 await hs.save()
+//                 await VerifyEmail(hs.Email,otp)
+//                 console.log(otp);
+//                 res.status(200).send("otp sent")
         
-    }catch(e){
-        res.status(400).send(e)
-    }
-})
+//     }catch(e){
+//         res.status(400).send(e)
+//     }
+// })
 
 router.get('/VerifyEmail', async(req,res)=>{
     try{
