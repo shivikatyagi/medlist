@@ -23,8 +23,9 @@ router.post('/Create_Hospital', async(req,res)=>{
                     specialChars: false,
                   });
                 temphospital.EmailOtp=otp
-                await VerifyEmail(temphospital.Email,otp)
                 console.log(otp);
+                console.log(temphospital.EmailOtp);
+                await VerifyEmail(temphospital.Email,otp)
                 await temphospital.save()
                 res.status(201).send(temphospital)
             }
@@ -56,10 +57,9 @@ router.post('/Create_Hospital', async(req,res)=>{
 //     }
 // })
 
-router.get('/VerifyEmail', async(req,res)=>{
+router.post('/VerifyEmail', async(req,res)=>{
     try{
-                const hs = await TempHospital.findOne({id:req.params.id})
-
+                const hs = await TempHospital.findOne({_id:req.query.id})
                 let otp = req.body.otp
                 if(hs.EmailOtp==otp){
                     hs.EmailVerified="true"
