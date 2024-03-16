@@ -71,10 +71,10 @@ router.post('/VerifyEmail', async(req,res)=>{
                         await hospital.save()
                         res.status(201).send(hospital)
                     }
-                    res.status(201).send("email verified")
+                    res.status(200).send("email verified")
                 }
                 else{
-                    res.status(201).send("Wrong otp")
+                    res.status(200).send("Wrong otp")
                 }
         
     }catch(e){
@@ -93,12 +93,12 @@ router.get('/VerifyPhone', async(req,res)=>{
                         const token = jwt.sign({ _id: hospital._id.toString() }, process.env.JWT_SECRET)
                         hospital.Tokens = hospital.Tokens.concat({token})
                         await hospital.save()
-                        res.status(201).send(hospital)
+                        res.status(201).send({token,hospital})
                     }
-                    res.status(201).send("phone number verified")
+                    res.status(200).send("phone number verified")
                 }
                 else{
-                    res.status(201).send("Wrong otp")
+                    res.status(200).send("Wrong otp")
                 }
         
     }catch(e){
