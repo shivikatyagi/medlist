@@ -13,7 +13,7 @@ const router = new express.Router()
 
 router.post('/Create_Hospital', async(req,res)=>{
     try{
-            const existinghospital = await Hospital.findOne({DoctorName:req.body.DoctorName,HospitalName:req.body.HospitalName,Address:req.body.Address})
+            const existinghospital = await Hospital.findOne({Email:req.body.DoctorName,DoctorName:req.body.DoctorName,HospitalName:req.body.HospitalName,Address:req.body.Address})
             if(!existinghospital){
                 const temphospital = new TempHospital(req.body)
                 temphospital.Password = await bcrypt.hash(req.body.Password, 8)
@@ -71,6 +71,7 @@ router.post('/VerifyEmail', async(req,res)=>{
                         await hospital.save()
                         res.status(201).send(hospital)
                     }
+                    else
                     res.status(200).send("email verified")
                 }
                 else{
@@ -83,7 +84,7 @@ router.post('/VerifyEmail', async(req,res)=>{
 })
 router.get('/VerifyPhone', async(req,res)=>{
     try{
-                const hs = await TempHospital.findOne({id:req.params.id})
+            const hs = await TempHospital.findOne({_id:req.query.id})
                 if(req.query.mssg=="success"){
                     console.log("fxdghjkhgfxdzcfg")
                     hs.PhoneVerified='true'
@@ -95,6 +96,7 @@ router.get('/VerifyPhone', async(req,res)=>{
                         await hospital.save()
                         res.status(201).send({token,hospital})
                     }
+                    else
                     res.status(200).send("phone number verified")
                 }
                 else{
