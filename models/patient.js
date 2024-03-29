@@ -11,30 +11,36 @@ const patientSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    Gender:{
+        type: String,
+        required: true,
+        trim: true
+    },
     Hospital: [{
         HospitalID: {
             type: mongoose.Types.ObjectId,
-            required: true,
             trim: true,
             ref: 'Hospital'
         },
         HospitalName: {
             type: String,
-            required: true,
             trim: true,
             ref: 'Hospital'
         },
         Address: {
             type: String,
-            required: true,
             trim: true,
             ref: 'Hospital'
         },
         DoctorName: {
             type: String,
-            required: true,
             trim: true,
             ref: 'Hospital'
+        },
+        Verified:{
+            type: String,
+            required:true,
+            enum : ['true','false']
         },
     }],
     Phone:{
@@ -42,22 +48,20 @@ const patientSchema = new mongoose.Schema({
         unique:true,
         required:true
     },
-    Verified:{
-        type: String,
-        required:true,
-        enum : ['true','false']
-    },
     Medicine:[{
         MedicineName: {
             type: String,
             trim: true
         },
+        TimeTaken:{
+            type: Date,
+        },
+        MealTime:{
+            type:String
+        },
         Picture:{
             type: String,
             trim: true,
-        },
-        TimeTaken:{
-            type: Date,
         },
         DateAdded:{
             type: Date,
@@ -107,7 +111,10 @@ const patientSchema = new mongoose.Schema({
             type: Date,
         }
     }],
-    Appointment:{
+    Appointment:[{
+        HospitalID:{
+            type: mongoose.Types.ObjectId,
+        },
         Date:{
             type: String
         },
@@ -118,7 +125,7 @@ const patientSchema = new mongoose.Schema({
             type: String,
             enum : ['done','left']
         }
-    },
+    }],
     Tokens: [{
             token: {
                 type: String,

@@ -5,14 +5,27 @@ const tempSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    HospitalName: {
-        type: String,
-        required: true,
+    Age:{
+        type: Number,
         trim: true
     },
     HospitalID: {
         type: String,
         // required: true,
+        trim: true,
+        ref: 'Hospital'
+    },
+    HospitalName: {
+        type: String,
+        trim: true
+    },
+    Address: {
+        type: String,
+        trim: true,
+        ref: 'Hospital'
+    },
+    DoctorName: {
+        type: String,
         trim: true,
         ref: 'Hospital'
     },
@@ -22,7 +35,6 @@ const tempSchema = new mongoose.Schema({
     },
     Phone:{
         type: String,
-        required:true,
     },
 })
 

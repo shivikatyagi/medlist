@@ -153,26 +153,26 @@ router.post('/hospital/logoutAll',auth, async(req,res)=>{
     }
 })
 
-router.post('/ForgotPassword',async(req,res)=>{
-    try{
-        const hospital = await Hospital.findOne({_id:req.body.hospital_id })
-        if (!hospital) {
-            res.status(404).send('Hospital with this hospital id does not exist')
-        }
-        if(req.body.Password!=req.body.ConfirmPassword)
-        res.send("Confirm Passwprd should be same as Password")
-        const isMatch = await bcrypt.compare(req.body.Password, hospital.Password)
-        if (isMatch) {
-            res.status(404).send('new passwword should not be same as old password')
-        } 
-        hospital.Password = await bcrypt.hash(req.body.Password, 8)
-        hospital.Tokens=[]
-        hospital.save()
-        res.send("Password has changed ....Please login with updated password")
-    }catch(e){
-            res.status(500).send()
-    }
-})
+// router.post('/ForgotPassword',async(req,res)=>{
+//     try{
+//         const hospital = await Hospital.findOne({_id:req.body.hospital_id })
+//         if (!hospital) {
+//             res.status(404).send('Hospital with this hospital id does not exist')
+//         }
+//         if(req.body.Password!=req.body.ConfirmPassword)
+//         res.send("Confirm Passwprd should be same as Password")
+//         const isMatch = await bcrypt.compare(req.body.Password, hospital.Password)
+//         if (isMatch) {
+//             res.status(404).send('new passwword should not be same as old password')
+//         } 
+//         hospital.Password = await bcrypt.hash(req.body.Password, 8)
+//        // hospital.Tokens=[]
+//         hospital.save()
+//         res.send("Password has changed ....Please login with updated password")
+//     }catch(e){
+//             res.status(500).send()
+//     }
+// })
 
 router.get('/hospitalDetail',auth,async(req,res)=>{
     try{
@@ -184,7 +184,7 @@ router.get('/hospitalDetail',auth,async(req,res)=>{
 
 router.get('/nonVerifiedPatient',auth,async(req,res)=>{
     try{
-        const patient = await Patient.find({HospitalID:req.hospital.id,Verified:'not verified'}).select("id PatientName Phone Verified")
+        const patient = await Patient.find({Hospital:{HospitalID:req.hospital.id,Verified:'not verified'}}).select("id PatientName Phone Verified")
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
@@ -228,12 +228,13 @@ router.get('/SearchPatient',auth, async(req,res)=>{
 router.post('/addingMedicines',auth,async(req,res)=>{
     try{
         const patient = await Patient.findOne({id:req.body.id, HospitalID:req.hospital.id})
-        const { MedicineName, Picture, TimeTaken } = req.body;
+        const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
         patient.Medicine.push({
             MedicineName,
-            Picture,
             TimeTaken,
+            MealTime,
+            Picture,
             DateAdded
           });
         patient.save()
@@ -419,22 +420,24 @@ router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
 router.get('appointment/today',auth, async(req,res)=>{
     try{ 
         const date = new Date()
+        const appointments = Patient.find({Hospital:{
+            _id:req.hospital.id
+        }, appointments:{
+            Date:date
+        }})
+        res.status(200).send(appointments)
     }catch(e){
         res.status(400).send(e)
     }
 })
 
-router.get('appointment/today',auth, async(req,res)=>{
-    try{ 
-        
-    }catch(e){
-        res.status(400).send(e)
-    }
-})
 router.get('appointment/left',auth, async(req,res)=>{
     try{ 
-        const hospital = await Hospital.find({_id:req.params.hospital_id })
-        const patient = await Patient.find({HospitalID:hospital.id,Appointment:{Date:req.params.date},status:"left"})
+        const patient = await Patient.find({Hospital:{
+            HospitalID:req.hospital._id
+        },Appointment:{
+                Date:req.params.date
+            },status:"left"})
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
@@ -442,8 +445,7 @@ router.get('appointment/left',auth, async(req,res)=>{
 })
 router.get('appointment/done',auth, async(req,res)=>{
     try{ 
-        const hospital = await Hospital.find({_id:req.params.hospital_id })
-        const patient = await Patient.find({HospitalID:hospital.id,Appointment:{Date:req.params.date},status:"done"})
+        const patient = await Patient.find({Hospital:{HospitalID:req.hospital._id},Appointment:{Date:req.params.date,status:"done"}})
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
@@ -452,8 +454,7 @@ router.get('appointment/done',auth, async(req,res)=>{
 
 router.get('appointment/:date',auth, async(req,res)=>{
     try{ 
-        const hospital = await Hospital.find({_id:req.params.hospital_id })
-        const patient = await Patient.find({HospitalID:hospital.id,Appointment:{Date:req.params.date}})
+        const patient = await Patient.find({Hospital:{HospitalID:req.hospital._id},Appointment:{Date:req.params.date}})
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)

@@ -53,17 +53,6 @@ const hospitalSchema = new mongoose.Schema({
         trim: true,
         required: true,
     },
-    // Appointment:{
-    //     Date:{
-    //         type: String
-    //     },
-    //     slot:{
-    //         type: String
-    //     },
-    //     status:{
-    //         type: String
-    //     }
-    // },
     Tokens: [{
         token: {
             type: String,
