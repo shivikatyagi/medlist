@@ -29,10 +29,6 @@ const tempSchema = new mongoose.Schema({
         trim: true,
         ref: 'Hospital'
     },
-    otp:{
-        type: Number,
-        // required:true
-    },
     Phone:{
         type: String,
     },

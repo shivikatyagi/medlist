@@ -25,17 +25,17 @@ router.post('/RegisterationDetails', async(req,res)=>{
             }})    
             if(!existingpatient){
                 const temppatient= new Temp(req.body)
-                let otp = otpGenerator.generate(4, {
-                    upperCaseAlphabets: false,
-                    lowerCaseAlphabets: false,
-                    specialChars: false,
-                  });
+                // let otp = otpGenerator.generate(4, {
+                //     upperCaseAlphabets: false,
+                //     lowerCaseAlphabets: false,
+                //     specialChars: false,
+                //   });
                 temppatient.HospitalID=existinghospital.id
-                temppatient.otp=otp
+                // temppatient.otp=otp
                 await temppatient.save()
 
                 console.log("fgfhgjhfc");
-                console.log(temppatient.id,otp);
+                console.log(temppatient.id);
                 res.status(200).send(temppatient)
             }
             else{
@@ -50,10 +50,12 @@ router.post('/RegisterationDetails', async(req,res)=>{
     }
 })
 
-router.post('/RegisteringPatient', async(req,res)=>{
+router.get('/RegisteringPatient', async(req,res)=>{
     try{ 
         const user=await Temp.findOne({_id:req.query.id})
-        var patient = await Patient.findOne({Phone:user.Phone})
+        const patient = await Patient.findOne({Phone:user.Phone})
+        console.log(user)
+        console.log("gchvjbknlm")
         if(req.query.mssg=='success'){
             if(!patient){
                 patient =new Patient();
@@ -71,6 +73,7 @@ router.post('/RegisteringPatient', async(req,res)=>{
                 console.log("heyyyyyhelllooooohiiiii")
             }
             else{
+                console.log("hcvjhbknlmbhvghcgvjhbkjnlk")
                 const data= { 
                     HospitalID:user.HospitalID,
                     DoctorName:user.DoctorName,

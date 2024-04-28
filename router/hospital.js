@@ -222,7 +222,7 @@ router.get('/SearchPatient',auth, async(req,res)=>{
         res.status(400).send(e)
     }
 })
-
+0
 
 
 router.post('/addingMedicines',auth,async(req,res)=>{
