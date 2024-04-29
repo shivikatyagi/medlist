@@ -70,7 +70,6 @@ router.get('/RegisteringPatient', async(req,res)=>{
                     Verified:'false'
                 }
                 patient.Hospital.push(data);
-                console.log("heyyyyyhelllooooohiiiii")
             }
             else{
                 console.log("hcvjhbknlmbhvghcgvjhbkjnlk")
