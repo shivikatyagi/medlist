@@ -227,7 +227,7 @@ router.get('/SearchPatient',auth, async(req,res)=>{
 
 router.post('/addingMedicines',auth,async(req,res)=>{
     try{
-        const patient = await Patient.findOne({id:req.body.id, HospitalID:req.hospital.id})
+        const patient = await Patient.findOne({_id:req.body.id, Hospital:{HospitalID:req.hospital._id}})
         const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
         patient.Medicine.push({
@@ -272,7 +272,7 @@ router.post('/deleteAllMedicines',auth, async(req,res)=>{
 
 router.post('/addingExercises',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findOne({id:req.body.id, HospitalID:req.hospital.id})
+        const patient = await Patient.findOne({_id:req.body.id, Hospital:{HospitalID:req.hospital._id}})
         const { Description, TimeTaken } = req.body;
         const DateAdded = new Date();
         patient.Exercise.push({
@@ -314,7 +314,7 @@ router.post('/deleteAllExercises',auth, async(req,res)=>{
 
 router.post('/addingWhatToEat',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findById(req.body.id)
+        const patient = await Patient.findOne({_id:req.body.id, Hospital:{HospitalID:req.hospital._id}})
         if(!patient)
             res.status(404).send("patient not found")
         patient.BalancedDiet.WhatToEat.push(req.body.d)
@@ -327,7 +327,7 @@ router.post('/addingWhatToEat',auth, async(req,res)=>{
 
 router.post('/addingWhatNotToEat',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findById(req.body.id)
+        const patient = await Patient.findOne({_id:req.body.id, Hospital:{HospitalID:req.hospital._id}})
         if(!patient)
             res.status(404).send("patient not found")
         patient.BalancedDiet.WhatNotToEat.push(req.body.d)
@@ -366,7 +366,7 @@ router.patch('/deleteWhatNotToEat',auth, async(req,res)=>{
 
 router.post('/deleteAllWhatToEat', auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.findOne({_id:req.body.patient_id})
+        const patient = await Patient.findOne({_id:req.body.id, Hospital:{HospitalID:req.hospital._id}})
         patient.BalancedDiet.WhatToEat=[]
         patient.save()
             res.status(200).send("All WhatToEats are deleted")
