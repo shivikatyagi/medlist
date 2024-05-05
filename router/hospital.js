@@ -228,7 +228,7 @@ router.get('/SearchPatient',auth, async(req,res)=>{
 router.post('/addingMedicines',auth,async(req,res)=>{
     try{
         console.log(req.hospital._id);
-        const patient = await Patient.findOne({_id:req.body.id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
         patient.Medicine.push({
@@ -273,7 +273,7 @@ router.post('/deleteAllMedicines',auth, async(req,res)=>{
 
 router.post('/addingExercises',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.body.id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         const { Description, TimeTaken } = req.body;
         const DateAdded = new Date();
         patient.Exercise.push({
@@ -315,7 +315,7 @@ router.post('/deleteAllExercises',auth, async(req,res)=>{
 
 router.post('/addingWhatToEat',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.body.id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         if(!patient)
             res.status(404).send("patient not found")
         patient.BalancedDiet.WhatToEat.push(req.body.d)
@@ -328,7 +328,7 @@ router.post('/addingWhatToEat',auth, async(req,res)=>{
 
 router.post('/addingWhatNotToEat',auth, async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.body.id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         if(!patient)
             res.status(404).send("patient not found")
         patient.BalancedDiet.WhatNotToEat.push(req.body.d)
@@ -402,7 +402,7 @@ const upload = multer({
 
 router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.body.patient_id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.patient_id})
         if(!patient)
             res.status(404).send("patient not found")
         const file=req.file.buffer
@@ -436,11 +436,7 @@ router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
 
 router.get('/appointment/left',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({Hospital:{
-            HospitalID:req.hospital._id
-        },Appointment:{
-                Date:req.params.date
-            },status:"left"})
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"left"})
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
@@ -448,16 +444,16 @@ router.get('/appointment/left',auth, async(req,res)=>{
 })
 router.get('/appointment/done',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({Hospital:{HospitalID:req.hospital._id},Appointment:{Date:req.params.date,status:"done"}})
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,status:"done"})
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
     }
 })
 
-router.get('appointment/:date',auth, async(req,res)=>{
+router.get('/appointment',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({Hospital:{HospitalID:req.hospital._id},Appointment:{Date:req.params.date}})
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date': req.query.date});
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
