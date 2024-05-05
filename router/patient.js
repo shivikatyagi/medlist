@@ -172,7 +172,7 @@ router.get('/HospitalDetail',auth,async(req,res)=>{
 router.post('/bookAppointment', auth,async(req,res)=>{
     try{ 
         const appointment = {
-            HospitalID: req.query.hid,
+            HospitalID: req.body.hid,
             Date:req.body.Date,
             slot:req.body.slot,
             status:'left'
