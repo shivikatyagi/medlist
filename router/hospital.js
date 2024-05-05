@@ -417,21 +417,23 @@ router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
     }
 })
 
-router.get('appointment/today',auth, async(req,res)=>{
-    try{ 
-        const date = new Date()
-        const appointments = Patient.find({Hospital:{
-            _id:req.hospital.id
-        }, appointments:{
-            Date:date
-        }})
-        res.status(200).send(appointments)
-    }catch(e){
-        res.status(400).send(e)
-    }
-})
+// router.get('/appointment/today',auth, async(req,res)=>{
+//     try{ 
+//         var date = new Date()
+//         date=date.toString()
+//         console.log(date);
+//         const appointments = Patient.find({Hospital:{
+//             _id:req.hospital.id
+//         }, appointments:{
+//             Date:date
+//         }})
+//         res.status(200).send(appointments)
+//     }catch(e){
+//         res.status(400).send(e)
+//     }
+// })
 
-router.get('appointment/left',auth, async(req,res)=>{
+router.get('/appointment/left',auth, async(req,res)=>{
     try{ 
         const patient = await Patient.find({Hospital:{
             HospitalID:req.hospital._id
@@ -443,7 +445,7 @@ router.get('appointment/left',auth, async(req,res)=>{
         res.status(400).send(e)
     }
 })
-router.get('appointment/done',auth, async(req,res)=>{
+router.get('/appointment/done',auth, async(req,res)=>{
     try{ 
         const patient = await Patient.find({Hospital:{HospitalID:req.hospital._id},Appointment:{Date:req.params.date,status:"done"}})
         res.status(200).send(patient)
