@@ -54,7 +54,7 @@ const patientSchema = new mongoose.Schema({
             trim: true
         },
         TimeTaken:{
-            type: Date,
+            type: String,
         },
         MealTime:{
             type:String
@@ -73,7 +73,7 @@ const patientSchema = new mongoose.Schema({
             trim: true
         },
         TimeTaken:{
-            type: Date,
+            type: String,
         },
         DateAdded:{
             type: Date,
@@ -93,7 +93,7 @@ const patientSchema = new mongoose.Schema({
             }
         ],
         TimeTaken:{
-            type: Date,
+            type: String,
         },
         DateAdded:{
             type: Date,

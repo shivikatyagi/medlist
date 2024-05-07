@@ -227,7 +227,6 @@ router.get('/SearchPatient',auth, async(req,res)=>{
 
 router.post('/addingMedicines',auth,async(req,res)=>{
     try{
-        console.log(req.hospital._id);
         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
@@ -453,7 +452,7 @@ router.get('/appointment/done',auth, async(req,res)=>{
 
 router.get('/appointment',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date': req.query.date});
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date': req.query.date}).select;
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
