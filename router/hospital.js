@@ -235,9 +235,11 @@ router.get('/SearchPatient',auth, async(req,res)=>{
 router.post('/addingMedicines',auth,async(req,res)=>{
     try{
         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
+        const HospitalID = req.hospital._id
         const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
         patient.Medicine.push({
+            HospitalID,
             MedicineName,
             TimeTaken,
             MealTime,
@@ -245,6 +247,7 @@ router.post('/addingMedicines',auth,async(req,res)=>{
             DateAdded
           });
           patient.PrevMedicine.push({
+            HospitalID,
             MedicineName,
             TimeTaken,
             MealTime,
@@ -288,9 +291,11 @@ router.post('/deleteAllMedicines',auth, async(req,res)=>{
 router.post('/addingExercises',auth, async(req,res)=>{
     try{
         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
+        const HospitalID = req.hospital._id
         const { Description, TimeTaken } = req.body;
         const DateAdded = new Date();
         patient.Exercise.push({
+            HospitalID,
             Description,
             TimeTaken,
             DateAdded
@@ -332,7 +337,9 @@ router.post('/addingWhatToEat',auth, async(req,res)=>{
         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         if(!patient)
             res.status(404).send("patient not found")
-        patient.BalancedDiet.WhatToEat.push(req.body.d)
+        const HospitalID = req.hospital._id
+        const d=req.body.d
+        patient.BalancedDiet.WhatToEat.push({HospitalID,d})
         patient.save()
         res.status(201).send("diet added successfully")
     }catch(e){
@@ -345,7 +352,9 @@ router.post('/addingWhatNotToEat',auth, async(req,res)=>{
         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         if(!patient)
             res.status(404).send("patient not found")
-        patient.BalancedDiet.WhatNotToEat.push(req.body.d)
+        const HospitalID = req.hospital._id
+        const d=req.body.d
+        patient.BalancedDiet.WhatNotToEat.push({HospitalID,d})
         patient.save()
         res.status(201).send("diet added successfully")
     }catch(e){

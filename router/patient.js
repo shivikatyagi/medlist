@@ -173,7 +173,9 @@ router.post('/addingMedicinesPatient',auth,async(req,res)=>{
         const pat = await Patient.findOne({'Hospital.HospitalID':req.body.hid,_id:req.patient._id})
         const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
         const DateAdded = new Date();
+        const HospitalID = req.body.hid
         pat.Medicine.push({
+            HospitalID,
             MedicineName,
             TimeTaken,
             MealTime,
@@ -181,6 +183,7 @@ router.post('/addingMedicinesPatient',auth,async(req,res)=>{
             DateAdded
           });
           pat.PrevMedicine.push({
+            HospitalID,
             MedicineName,
             TimeTaken,
             MealTime,

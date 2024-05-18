@@ -49,6 +49,11 @@ const patientSchema = new mongoose.Schema({
         required:true
     },
     Medicine:[{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            trim: true,
+            ref: 'Hospital'
+        },
         MedicineName: {
             type: String,
             trim: true
@@ -68,6 +73,11 @@ const patientSchema = new mongoose.Schema({
         }
     }],
     PrevMedicine:[{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            trim: true,
+            ref: 'Hospital'
+        },
         MedicineName: {
             type: String,
             trim: true
@@ -87,6 +97,11 @@ const patientSchema = new mongoose.Schema({
         }
     }],
     Exercise:[{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            trim: true,
+            ref: 'Hospital'
+        },
         Description: {
             type: String,
             trim: true
@@ -99,6 +114,11 @@ const patientSchema = new mongoose.Schema({
         }
     }],
     BalancedDiet:{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            trim: true,
+            ref: 'Hospital'
+        },
         WhatToEat:[
             {
                 type: String,
@@ -119,6 +139,11 @@ const patientSchema = new mongoose.Schema({
         }
     },
     Reports:[{
+        HospitalID: {
+            type: mongoose.Types.ObjectId,
+            trim: true,
+            ref: 'Hospital'
+        },
         Description: {
             type: String,
             trim: true
