@@ -153,16 +153,16 @@ router.post('/patient/logoutAll',auth, async(req,res)=>{
 
 router.get('/patientDetail',auth,async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.patient._id}).select("id PatientName Hospital.HospitalName Phone")
+        const patient = await Patient.findOne({_id:req.patient._id}).select("id PatientName Hospital.HospitalName Hospital.HospitalID Hospital.Address Hospital.DoctorName Phone")
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
     }
 })
 
-router.get('/HospitalDetail',auth,async(req,res)=>{
+router.get('/HospitalDetailPatient',auth,async(req,res)=>{
     try{
-        const hospital = await Hospital.findOne({HospitalName:req.patient.HospitalName})
+        const hospital = await Hospital.findOne({'Hospital.HospitalID':req.params.hid})
         res.status(200).send(hospital)
     }catch(e){
         res.status(400).send(e)
