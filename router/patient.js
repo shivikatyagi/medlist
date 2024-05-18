@@ -168,6 +168,49 @@ router.get('/HospitalDetail',auth,async(req,res)=>{
         res.status(400).send(e)
     }
 })
+router.post('/addingMedicinesPatient',auth,async(req,res)=>{
+    try{
+        const pat = await Patient.findOne({'Hospital.HospitalID':req.body.hid,_id:req.patient._id})
+        const { MedicineName,TimeTaken,MealTime ,Picture} = req.body;
+        const DateAdded = new Date();
+        pat.Medicine.push({
+            MedicineName,
+            TimeTaken,
+            MealTime,
+            Picture,
+            DateAdded
+          });
+        pat.save()
+        res.status(201).send(pat.Medicine)
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.patch('/deleteMedicinePatient',auth, async(req,res)=>{
+    try{ 
+    await Patient.updateOne({_id:req.patient_id}, {
+        $pull: {
+            Medicine: {_id: req.body.medicine_id}
+        }
+      });
+            res.status(200).send("medicine deleted")
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/deleteAllMedicinesPatient',auth, async(req,res)=>{
+    try{ 
+        const patient = await Patient.findOne({_id:req.patient_id})
+        console.log(patient);
+        patient.Medicine=[]
+        patient.save()
+        res.status(200).send("All medicines are deleted")
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
 
 router.post('/bookAppointment', auth,async(req,res)=>{
     try{ 

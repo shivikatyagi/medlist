@@ -201,7 +201,14 @@ router.post('/verifyingPatient',auth, async(req,res)=>{
         res.status(400).send(e)
     }
 })
-
+router.get('/allHospitals', async(req,res)=>{
+    try{
+        const hospital=await Hospital.find()
+        res.status(200).send(hospital)
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
 
 router.get('/SearchPatient',auth, async(req,res)=>{
     try{
