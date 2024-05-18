@@ -180,6 +180,13 @@ router.post('/addingMedicinesPatient',auth,async(req,res)=>{
             Picture,
             DateAdded
           });
+          pat.PrevMedicine.push({
+            MedicineName,
+            TimeTaken,
+            MealTime,
+            Picture,
+            DateAdded
+          });
         pat.save()
         res.status(201).send(pat.Medicine)
     }catch(e){
@@ -202,11 +209,20 @@ router.patch('/deleteMedicinePatient',auth, async(req,res)=>{
 
 router.get('/deleteAllMedicinesPatient',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.findOne({_id:req.patient_id})
+        const patient = await Patient.findOne({_id:req.patient._id})
         console.log(patient);
         patient.Medicine=[]
         patient.save()
         res.status(200).send("All medicines are deleted")
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/MedicineRecord',auth, async(req,res)=>{
+    try{ 
+        const patient = await Patient.findOne({_id:req.patient._id})
+        res.status(200).send(patient.PrevMedicine)
     }catch(e){
         res.status(400).send(e)
     }

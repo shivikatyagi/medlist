@@ -244,12 +244,20 @@ router.post('/addingMedicines',auth,async(req,res)=>{
             Picture,
             DateAdded
           });
+          patient.PrevMedicine.push({
+            MedicineName,
+            TimeTaken,
+            MealTime,
+            Picture,
+            DateAdded
+          });
         patient.save()
         res.status(201).send(patient.Medicine)
     }catch(e){
         res.status(400).send(e)
     }
 })
+
 
 router.patch('/deleteMedicine',auth, async(req,res)=>{
     try{ 

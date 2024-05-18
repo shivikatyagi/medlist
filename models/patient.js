@@ -67,6 +67,25 @@ const patientSchema = new mongoose.Schema({
             type: Date,
         }
     }],
+    PrevMedicine:[{
+        MedicineName: {
+            type: String,
+            trim: true
+        },
+        TimeTaken:{
+            type: String,
+        },
+        MealTime:{
+            type:String
+        },
+        Picture:{
+            type: String,
+            trim: true,
+        },
+        DateAdded:{
+            type: Date,
+        }
+    }],
     Exercise:[{
         Description: {
             type: String,
