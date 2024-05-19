@@ -114,21 +114,30 @@ const patientSchema = new mongoose.Schema({
         }
     }],
     BalancedDiet:{
-        HospitalID: {
-            type: mongoose.Types.ObjectId,
-            trim: true,
-            ref: 'Hospital'
-        },
         WhatToEat:[
             {
-                type: String,
-                trim: true
+                HospitalID: {
+                    type: mongoose.Types.ObjectId,
+                    trim: true,
+                    ref: 'Hospital'
+                },
+                FoodItem:{
+                    type: String,
+                    trim: true
+                }
             }
         ],
         WhatNotToEat:[
             {
+                HospitalID: {
+                type: mongoose.Types.ObjectId,
+                trim: true,
+                ref: 'Hospital'
+                },
+                FoodItem:{
                 type: String,
                 trim: true
+                }
             }
         ],
         TimeTaken:{

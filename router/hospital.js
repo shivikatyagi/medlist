@@ -338,10 +338,10 @@ router.post('/addingWhatToEat',auth, async(req,res)=>{
         if(!patient)
             res.status(404).send("patient not found")
         const HospitalID = req.hospital._id
-        const d=req.body.d
-        patient.BalancedDiet.WhatToEat.push({HospitalID,d})
+        const FoodItem=req.body.FoodItem
+        patient.BalancedDiet.WhatToEat.push({HospitalID,FoodItem})
         patient.save()
-        res.status(201).send("diet added successfully")
+        res.status(201).send(patient.BalancedDiet.WhatToEat)
     }catch(e){
         res.status(400).send(e)
     }
@@ -353,8 +353,8 @@ router.post('/addingWhatNotToEat',auth, async(req,res)=>{
         if(!patient)
             res.status(404).send("patient not found")
         const HospitalID = req.hospital._id
-        const d=req.body.d
-        patient.BalancedDiet.WhatNotToEat.push({HospitalID,d})
+        const FoodItem=req.body.FoodItem
+        patient.BalancedDiet.WhatNotToEat.push({HospitalID,FoodItem})
         patient.save()
         res.status(201).send("diet added successfully")
     }catch(e){
