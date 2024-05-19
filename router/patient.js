@@ -20,18 +20,12 @@ router.post('/RegisterationDetails', async(req,res)=>{
     try{
         const existinghospital = await Hospital.findOne({DoctorName:req.body.DoctorName,HospitalName:req.body.HospitalName,Address:req.body.Address})
         if(existinghospital){
-            const existingpatient=await Patient.findOne({Phone:req.body.Phone,Hospital:{
-                HospitalName:req.body.HospitalName,Address:req.body.Address,DoctorName:req.body.DoctorName
-            }})    
+            const existingpatient=await Patient.findOne({Phone:req.body.Phone,
+                'Hospital.HospitalName':req.body.HospitalName,'Hospital.Address':req.body.Address,'Hospital.DoctorName':req.body.DoctorName})    
+            console.log(existingpatient);
             if(!existingpatient){
                 const temppatient= new Temp(req.body)
-                // let otp = otpGenerator.generate(4, {
-                //     upperCaseAlphabets: false,
-                //     lowerCaseAlphabets: false,
-                //     specialChars: false,
-                //   });
                 temppatient.HospitalID=existinghospital.id
-                // temppatient.otp=otp
                 await temppatient.save()
 
                 console.log("fgfhgjhfc");
