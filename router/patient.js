@@ -49,13 +49,13 @@ router.get('/RegisteringPatient', async(req,res)=>{
         const user=await Temp.findOne({_id:req.query.id})
         const patient = await Patient.findOne({Phone:user.Phone})
         console.log(user)
-        console.log("gchvjbknlm")
         if(req.query.mssg=='success'){
             if(!patient){
-                patient =new Patient();
-                patient.PatientName = user.PatientName;
-                patient.Age = user.Age;
-                patient.Phone = user.Phone;
+                const newpatient =new Patient();
+                newpatient.PatientName = user.PatientName;
+                newpatient.Age = user.Age;
+                newpatient.Gender = user.Gender;
+                newpatient.Phone = user.Phone;
                 const data= { 
                     HospitalID:user.HospitalID,
                     HospitalName:user.HospitalName,
@@ -63,7 +63,15 @@ router.get('/RegisteringPatient', async(req,res)=>{
                     Address:user.Address,
                     Verified:'false'
                 }
-                patient.Hospital.push(data);
+                newpatient.Hospital.push(data);
+                const token = jwt.sign({ _id: newpatient._id.toString() }, process.env.JWT_SECRET)
+                newpatient.Tokens = newpatient.Tokens.concat({ token })
+                
+                console.log("jb hpnlk");
+                await newpatient.save()
+                console.log(newpatient.id)
+                await Temp.findByIdAndDelete(req.body.id);
+                res.status(201).send({newpatient,token})
             }
             else{
                 console.log("hcvjhbknlmbhvghcgvjhbkjnlk")
@@ -75,13 +83,14 @@ router.get('/RegisteringPatient', async(req,res)=>{
                     Verified:'false'
                 }
                 patient.Hospital.push(data);
+                const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
+                patient.Tokens = patient.Tokens.concat({ token })
+                await patient.save()
+                console.log(patient.id)
+                await Temp.findByIdAndDelete(req.body.id);
+                res.status(201).send({patient,token})
             }
-            const token = jwt.sign({ _id: patient._id.toString() }, process.env.JWT_SECRET)
-            patient.Tokens = patient.Tokens.concat({ token })
-            await patient.save()
-            console.log(patient.id)
-            await Temp.findByIdAndDelete(req.body.id);
-            res.status(200).send({patient,token})
+            
         }
         else{
             res.status(201).send("wrong otp")
@@ -235,6 +244,7 @@ router.post('/bookAppointment', auth,async(req,res)=>{
         }
         req.patient.Appointment.push(appointment)
         req.patient.save()
+        console.log(req.patient.Appointment);
         res.status(200).send(appointment)
         
     }catch(e){

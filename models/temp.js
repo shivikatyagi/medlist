@@ -9,6 +9,11 @@ const tempSchema = new mongoose.Schema({
         type: Number,
         trim: true
     },
+    Gender:{
+        type: String,
+        required: true,
+        trim: true
+    },
     HospitalID: {
         type: String,
         // required: true,
