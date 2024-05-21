@@ -504,7 +504,6 @@ router.get('/appointment/left',auth, async(req,res)=>{
 router.get('/appointment/done',auth, async(req,res)=>{
     try{ 
         const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"done"})
-        // .select('_id PatientName Age Gender Phone Appointment')
         console.log('Number of patients found:', patient.length);
         const filteredPatients = patient.map(patient => {
             const filteredAppointments = patient.Appointment.filter(appointment =>
