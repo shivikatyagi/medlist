@@ -157,7 +157,8 @@ router.post('/patient/logoutAll',auth, async(req,res)=>{
 
 router.get('/patientDetail',auth,async(req,res)=>{
     try{
-        const patient = await Patient.findOne({_id:req.patient._id}).select("id PatientName Hospital.HospitalName Hospital.HospitalID Hospital.Address Hospital.DoctorName Phone")
+        const patient = await Patient.findOne({_id:req.patient._id})
+        // .select("id PatientName Hospital.HospitalName Hospital.HospitalID Hospital.Address Hospital.DoctorName Phone")
         res.status(200).send(patient)
     }catch(e){
         res.status(400).send(e)
