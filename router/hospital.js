@@ -479,6 +479,7 @@ router.post('/addingReports',auth,async(req,res)=>{
 router.get('/appointment/left',auth, async(req,res)=>{
     try{ 
         const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"left"}).select('_id PatientName Age Gender Phone Appointment')
+        console.log('Number of patients found:', patient.length);
         const filteredPatients = patient.map(patient => {
             const filteredAppointments = patient.Appointment.filter(appointment =>
                 appointment.Date === req.query.date && appointment.status === 'left'
@@ -494,6 +495,29 @@ router.get('/appointment/left',auth, async(req,res)=>{
         });
 
         res.status(200).send(filteredPatients);
+
+
+
+        // const date = req.query.date;
+        // const hospitalID = req.hospital._id;
+        // const patients = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"left"}).select('_id PatientName Age Gender Phone Appointment')
+
+        // console.log('Number of patients found:', patients.length);
+        // const filteredPatients = patients.map(patient => {
+        //     const filteredAppointments = patient.Appointment.filter(appointment =>
+        //         appointment.HospitalID.toString() === hospitalID && appointment.Date === date && appointment.status === 'left'
+        //     );
+        //     return {
+        //         _id: patient._id,
+        //         PatientName: patient.PatientName,
+        //         Age: patient.Age,
+        //         Gender: patient.Gender,
+        //         Phone: patient.Phone,
+        //         Appointment: filteredAppointments
+        //     };
+        // });
+
+        // res.status(200).send(filteredPatients);
     }catch(e){
         res.status(400).send(e)
     }
