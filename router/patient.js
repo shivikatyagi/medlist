@@ -6,6 +6,7 @@ const auth = require('../middleware/patient_auth')
 const sendSMS = require('../verification/send')
 const otpGenerator = require('otp-generator');
 const jwt = require('jsonwebtoken')
+const moment = require('moment');
 const router = new express.Router()
 
 // const generateOTP = async function(){
@@ -233,22 +234,71 @@ router.get('/MedicineRecord',auth, async(req,res)=>{
         res.status(400).send(e)
     }
 })
+const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('-');
+    return new Date(year, month - 1, day); // Month is zero-indexed
+};
 
 router.post('/bookAppointment', auth,async(req,res)=>{
     try{ 
-        const appointment = {
-            HospitalID: req.body.hid,
-            Date:req.body.Date,
-            slot:req.body.slot,
-            status:'left'
+        const hospital= await Hospital.findOne({_id:req.body.hid})
+        if(!hospital)
+            res.status(200).send("hospital doesn't exist")
+        const hid=req.body.hid
+        const date=req.body.Date
+        const ExistingAppointment = req.patient.Appointment.some(
+            appointment => appointment.HospitalID.toString() === hid && appointment.Date === date
+        );
+        if(ExistingAppointment){
+            res.status(200).send("appointment has already been booked for this date")
         }
-        req.patient.Appointment.push(appointment)
-        req.patient.save()
-        console.log(req.patient.Appointment);
-        res.status(200).send(appointment)
-        
-    }catch(e){
-        res.status(400).send(e)
+        else {
+            // const appointment = {
+            //     HospitalID: req.body.hid,
+            //     Date:req.body.Date,
+            //     slot:req.body.slot,
+            //     status:'left'
+            // }
+            //     req.patient.Appointment.push(appointment)
+            //     req.patient.save()
+            //     console.log(req.patient.Appointment);
+            //     res.status(200).send(appointment)    
+            // const { hid, date } = req.body;
+            
+            const existingAppointments = await Patient.find({
+                'Appointment.HospitalID': hid,
+                'Appointment.Date': date
+            });
+            let slotStartTime = parseDate(date);
+            slotStartTime.setHours(10, 0, 0, 0); // Set time to 10:00 AM
+
+        if (existingAppointments.length > 0) {
+            const latestAppointment = existingAppointments[existingAppointments.length - 1].Appointment.slice(-1)[0];
+            const [hour, minute] = latestAppointment.slot.split(':').map(Number);
+            slotStartTime.setHours(hour, minute, 0, 0); // Set to latest appointment's slot time
+
+            console.log("Latest appointment time:", slotStartTime);
+
+            const randomMinutes = Math.floor(Math.random() * (38 - 15 + 1)) + 15; // Generate random minutes between 15 and 38
+            slotStartTime = new Date(slotStartTime.getTime() + randomMinutes * 60000); // Add random minutes
+        }
+
+        const slot = slotStartTime.toTimeString().slice(0, 5);
+        const newAppointment = {
+            HospitalID: hid,
+            Date: date,
+            slot: slot,
+            status: 'left'
+        };
+
+        req.patient.Appointment.push(newAppointment);
+        await req.patient.save();
+
+        res.status(200).json(req.patient.Appointment);
+    }
+    } catch (e) {
+        console.error(e);
+        res.status(500).send(e);
     }
 })
 

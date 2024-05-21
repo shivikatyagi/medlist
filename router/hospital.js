@@ -478,16 +478,44 @@ router.post('/addingReports',auth,async(req,res)=>{
 
 router.get('/appointment/left',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"left"})
-        res.status(200).send(patient)
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,'Appointment.status':"left"}).select('_id PatientName Age Gender Phone Appointment')
+        const filteredPatients = patient.map(patient => {
+            const filteredAppointments = patient.Appointment.filter(appointment =>
+                appointment.Date === req.query.date && appointment.status === 'left'
+            );
+            return {
+                _id: patient._id,
+                PatientName: patient.PatientName,
+                Age: patient.Age,
+                Gender: patient.Gender,
+                Phone: patient.Phone,
+                Appointment: filteredAppointments
+            };
+        });
+
+        res.status(200).send(filteredPatients);
     }catch(e){
         res.status(400).send(e)
     }
 })
 router.get('/appointment/done',auth, async(req,res)=>{
     try{ 
-        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,status:"done"})
-        res.status(200).send(patient)
+        const patient = await Patient.find({'Hospital.HospitalID':req.hospital._id,'Appointment.Date':req.query.date,status:"done"}).select('_id PatientName Age Gender Phone Appointment')
+        const filteredPatients = patient.map(patient => {
+            const filteredAppointments = patient.Appointment.filter(appointment =>
+                appointment.Date === req.query.date && appointment.status === 'done'
+            );
+            return {
+                _id: patient._id,
+                PatientName: patient.PatientName,
+                Age: patient.Age,
+                Gender: patient.Gender,
+                Phone: patient.Phone,
+                Appointment: filteredAppointments
+            };
+        });
+
+        res.status(200).send(filteredPatients);
     }catch(e){
         res.status(400).send(e)
     }
@@ -500,6 +528,19 @@ router.get('/appointment',auth, async(req,res)=>{
     }catch(e){
         res.status(400).send(e)
     }
+})
+
+router.patch('/patient_appointment',auth, async(req,res)=>{
+    try{ 
+        await Patient.updateOne({_id:req.body.id}, {
+            $pull: {
+                 'Appointment.status': 'done'
+            }
+          });
+                res.status(200).send("deleted")
+        }catch(e){
+            res.status(400).send(e)
+        }
 })
 
 module.exports = router
