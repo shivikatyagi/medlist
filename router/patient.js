@@ -277,6 +277,14 @@ router.get('/Diet', auth,async(req,res)=>{
         res.status(400).send(e)
     }
 })
+router.get('/Reports', auth,async(req,res)=>{
+    try{ 
+        res.status(200).send(req.patient.Reports)
+        
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
 
 
 

@@ -158,7 +158,8 @@ const patientSchema = new mongoose.Schema({
             trim: true
         },
         file:{
-            type:Buffer
+            type: String,
+            trim: true
         },
         DateAdded:{
             type: Date,

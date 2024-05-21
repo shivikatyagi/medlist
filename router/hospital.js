@@ -356,7 +356,7 @@ router.post('/addingWhatNotToEat',auth, async(req,res)=>{
         const FoodItem=req.body.FoodItem
         patient.BalancedDiet.WhatNotToEat.push({HospitalID,FoodItem})
         patient.save()
-        res.status(201).send("diet added successfully")
+        res.status(201).send(patient.BalancedDiet.WhatNotToEat)
     }catch(e){
         res.status(400).send(e)
     }
@@ -391,6 +391,7 @@ router.patch('/deleteWhatNotToEat',auth, async(req,res)=>{
 router.post('/deleteAllWhatToEat', auth, async(req,res)=>{
     try{ 
         const patient = await Patient.findOne({_id:req.body.id})
+        console.log(patient);
         patient.BalancedDiet.WhatToEat=[]
         patient.save()
             res.status(200).send("All WhatToEats are deleted")
@@ -410,28 +411,46 @@ router.post('/deleteAllWhatNotToEat',auth, async(req,res)=>{
     }
 })
 
-const upload = multer({
-    limits:{
-        fileSize: 100000000
-    },
-    fileFilter(req,file,cb){
-        if(!file.originalname.match(/\.(jpg|jpeg|png|pdf|doc|docx)$/)){
-        return cb(new Error('Please upload right file format'))
-        }
-        cb(undefined,true)
-    }
+// const upload = multer({
+//     limits:{
+//         fileSize: 100000000
+//     },
+//     fileFilter(req,file,cb){
+//         if(!file.originalname.match(/\.(jpg|jpeg|png|pdf|doc|docx)$/)){
+//         return cb(new Error('Please upload right file format'))
+//         }
+//         cb(undefined,true)
+//     }
     
-})
+// })
 
-router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
+// router.post('/addingReports',upload.single('reports'),auth,async(req,res)=>{
+//     try{
+//         const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.patient_id})
+//         if(!patient)
+//             res.status(404).send("patient not found")
+//         const file=req.file.buffer
+//         const Description=req.body.Description
+//         const DateAdded=new Date()
+//         patient.Reports.push({file,Description,DateAdded})
+//         await patient.save()
+//         console.log("xcvbn");
+//         res.status(200).send("file saved")
+
+//     }catch(e){
+//         res.status(400).send(e)
+//     }
+// })
+router.post('/addingReports',auth,async(req,res)=>{
     try{
-        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.patient_id})
+        const patient = await Patient.findOne({'Hospital.HospitalID':req.hospital._id,_id:req.body.id})
         if(!patient)
             res.status(404).send("patient not found")
-        const file=req.file.buffer
+        const HospitalID=req.hospital.id
         const Description=req.body.Description
+        const file=req.body.file
         const DateAdded=new Date()
-        patient.Reports.push({file,Description,DateAdded})
+        patient.Reports.push({HospitalID,Description,file,DateAdded})
         await patient.save()
         console.log("xcvbn");
         res.status(200).send("file saved")
