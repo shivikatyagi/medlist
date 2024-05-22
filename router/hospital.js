@@ -489,7 +489,12 @@ router.get('/appointment/left',auth, async(req,res)=>{
                 PatientName: patient.PatientName,
                 Age: patient.Age,
                 Gender: patient.Gender,
+                Hospital:patient.Hospital,
                 Phone: patient.Phone,
+                Medicine:patient.Medicine,
+                PrevMedicine:patient.PrevMedicine,
+                Exercise:patient.Exercise,
+                BalancedDiet:patient.BalancedDiet,
                 Appointment: filteredAppointments
             };
         });
@@ -514,7 +519,12 @@ router.get('/appointment/done',auth, async(req,res)=>{
                 PatientName: patient.PatientName,
                 Age: patient.Age,
                 Gender: patient.Gender,
+                Hospital:patient.Hospital,
                 Phone: patient.Phone,
+                Medicine:patient.Medicine,
+                PrevMedicine:patient.PrevMedicine,
+                Exercise:patient.Exercise,
+                BalancedDiet:patient.BalancedDiet,
                 Appointment: filteredAppointments
             };
         });
